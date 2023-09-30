@@ -1,0 +1,14 @@
+name: libvips
+description: A starting point for Dart libraries or applications.
+version: 0.1.0
+
+environment:
+  sdk: ^3.1.2
+
+dependencies:
+  logging: ^1.2.0
+  native_assets_cli: ^0.2.0
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
