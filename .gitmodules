@@ -1,3 +1,0 @@
-[submodule "vendor/libvips"]
-	path = vendor/libvips
-	url = https://github.com/blaugold/libvips
