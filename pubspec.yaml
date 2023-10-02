@@ -1,14 +1,79 @@
-name: libvips
+# TODO: Rename to libvips once https://github.com/dart-lang/native/issues/142 is fixed.
+name: dart_libvips
 description: A starting point for Dart libraries or applications.
 version: 0.1.0
+publish_to: none
 
 environment:
   sdk: ^3.1.2
 
 dependencies:
   logging: ^1.2.0
-  native_assets_cli: ^0.2.0
+  native_assets_cli: ^0.3.0
+  native_toolchain_c:
+    path: ../dart/native/pkgs/native_toolchain_c
+  ffi: ^2.1.0
+  meta: ^1.10.0
 
 dev_dependencies:
+  ffigen: ^9.0.1
   lints: ^2.0.0
   test: ^1.21.0
+
+ffigen:
+  output: lib/src/bindings.dart
+  preamble: |
+    // ignore_for_file: unused_element, unused_field
+  compiler-opts:
+    - -Ivendor/libvips/build/install/include
+    - -Ivendor/libvips/build/install/include/glib-2.0
+    - -Ivendor/libvips/build/install/lib/glib-2.0/include
+  exclude-all-by-default: true
+  headers:
+    entry-points:
+      - vendor/libvips/build/install/include/glib-2.0/glib.h
+      - vendor/libvips/build/install/include/vips/vips.h
+  functions:
+    include:
+      - g_strfreev
+      - g_value_init
+      - g_value_unset
+      - g_value_get_boolean
+      - g_value_set_boolean
+      - g_value_get_int
+      - g_value_get_uint64
+      - g_value_set_uint64
+      - g_value_set_int
+      - g_value_get_double
+      - g_value_set_double
+      - g_value_get_enum
+      - g_value_set_enum
+      - g_value_get_string
+      - g_value_set_string
+      - g_value_get_object
+      - g_value_set_object
+      - g_object_ref
+      - g_object_unref
+      - g_object_get_property
+      - g_object_set_property
+      - vips_init
+      - vips_error_buffer_copy
+      - 'vips_.*_get_type'
+      - vips_object_unref_outputs
+      - vips_image_new
+      - vips_image_new_from_file
+      - vips_image_get_fields
+      - vips_operation_new
+      - vips_cache_operation_build
+  typedefs:
+    include:
+      - GValue
+      - VipsImage
+      - VipsOperation
+  enums:
+    include:
+      - VipsDirection
+  macros:
+    include:
+      - 'G_TYPE_.*'
+  ffi-native:
