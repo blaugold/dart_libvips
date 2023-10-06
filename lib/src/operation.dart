@@ -19,7 +19,7 @@ class Operation extends GlibObject<VipsOperation> {
       dispose();
 
       if (resultPointer == nullptr) {
-        throw VipsException.withErrorBuffer('Operation "$name" failed');
+        throw InternalVipsException.withErrorBuffer('Operation "$name" failed');
       }
 
       result = GlibObject(resultPointer.cast(), attachFinalizer: false);

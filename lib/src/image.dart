@@ -7,21 +7,46 @@ import 'glib.dart';
 import 'native_string.dart';
 import 'operation.dart';
 
+/// The format used for each element of a band of an [Image].
+///
+/// Each corresponds to a native C type for the current machine. For example,
+/// [ushort] is `unsigned short`.
 enum BandFormat {
-  notset,
+  /// Invalid setting
+  notSet,
+
+  /// `unsigned char`
   uchar,
+
+  /// `char`
   char,
+
+  /// `unsigned short`
   ushort,
+
+  /// `short`
   short,
+
+  /// `unsigned int`
   uint,
+
+  /// `int`
   int,
+
+  /// `float`
   float,
+
+  /// `complex` (two floats)
   complex,
+
+  /// `double float`
   double,
-  dpcomplex;
+
+  /// `double complex` (two doubles)
+  doubleComplex;
 
   static const _cEnumMapping = {
-    VipsBandFormat.VIPS_FORMAT_NOTSET: BandFormat.notset,
+    VipsBandFormat.VIPS_FORMAT_NOTSET: BandFormat.notSet,
     VipsBandFormat.VIPS_FORMAT_UCHAR: BandFormat.uchar,
     VipsBandFormat.VIPS_FORMAT_CHAR: BandFormat.char,
     VipsBandFormat.VIPS_FORMAT_USHORT: BandFormat.ushort,
@@ -31,30 +56,76 @@ enum BandFormat {
     VipsBandFormat.VIPS_FORMAT_FLOAT: BandFormat.float,
     VipsBandFormat.VIPS_FORMAT_COMPLEX: BandFormat.complex,
     VipsBandFormat.VIPS_FORMAT_DOUBLE: BandFormat.double,
-    VipsBandFormat.VIPS_FORMAT_DPCOMPLEX: BandFormat.dpcomplex,
+    VipsBandFormat.VIPS_FORMAT_DPCOMPLEX: BandFormat.doubleComplex,
   };
 }
 
+/// How the values in an [Image] should be interpreted.
+///
+/// For example, a three-band float image of type [lab] should have its pixels
+/// interpreted as coordinates in CIE Lab space.
+///
+/// RGB and sRGB are treated in the same way. Use the [Image.toColourSpace] and
+/// related functions if you want some other behaviour.
 enum Interpretation {
+  /// Invalid setting
   error,
+
+  /// Generic many-band image
   multiBand,
+
+  /// Some kind of single-band image
   bw,
+
+  /// A 1D image, eg. histogram or lookup table
   histogram,
+
+  /// The first three bands are CIE XYZ
   xyz,
+
+  /// Pixels are in CIE Lab space
   lab,
+
+  /// The first four bands are in CMYK space
   cmyk,
+
+  /// Implies [Coding.labq]
   labq,
+
+  /// Generic RGB space
   rgb,
+
+  /// A uniform colourspace based on CMC(1:1)
   cmc,
+
+  /// Pixels are in CIE LCh space
   lch,
+
+  /// CIE LAB coded as three signed 16-bit values
   labs,
+
+  /// Pixels are sRGB
   srgb,
+
+  /// Pixels are CIE Yxy
   yxy,
+
+  /// Image is in fourier space
   fourier,
+
+  /// Generic 16-bit RGB
   rgb16,
+
+  /// Generic 16-bit mono
   grey16,
+
+  /// A matrix
   matrix,
+
+  /// Pixels are scRGB
   scrgb,
+
+  /// Pixels are HSV
   hsv;
 
   static const _cEnumMapping = {
@@ -81,10 +152,22 @@ enum Interpretation {
   };
 }
 
+/// How pixels are coded.
+///
+/// Normally, pixels are uncoded and can be manipulated as you would expect.
+/// However some file formats code pixels for compression, and sometimes it's
+/// useful to be able to manipulate images in the coded format.
 enum Coding {
+  /// Invalid setting
   error,
+
+  /// Pixels are not coded
   none,
+
+  /// Pixels encode 3 float CIE LAB values as 4 uchar
   labq,
+
+  /// Pixels encode 3 float RGB as 4 uchar (Radiance coding)
   rad;
 
   static const _cEnumMapping = {
@@ -95,11 +178,41 @@ enum Coding {
   };
 }
 
+/// Hint to the VIPS image IO system about the kind of demand geometry they
+/// prefer.
 enum DemandStyle {
+  /// Invalid setting
   error,
+
+  /// Demand in small (typically 64x64 pixel) tiles.
+  ///
+  /// This is the most general demand format. Output is demanded in small
+  /// (around 100x100 pel) sections. This style works reasonably efficiently,
+  /// even for bizarre operations like 45 degree rotate.
   smallTile,
+
+  /// Demand in fat (typically 10 pixel high) strips.
+  ///
+  /// This operation would like to output strips the width of the image and as
+  /// high as possible. This option is suitable for area operations which do not
+  /// violently transform coordinates, such as [Image.conv].
   fatStrip,
+
+  /// Demand in thin (typically 1 pixel high) strips.
+  ///
+  /// This operation would like to output strips the width of the image and a
+  /// few pels high. This is option suitable for point-to-point operations,
+  /// e.g. arithmetic operations.
+  ///
+  /// This option is only efficient for cases where each output pel depends upon
+  /// the pel in the corresponding position in the input image.
   thinStrip,
+
+  /// Demand geometry does not matter.
+  ///
+  /// This image is not being demand-read from a disc file (even indirectly) so
+  /// any demand style is OK. It's used for things like [Image.black] where the
+  /// pixels are calculated.
   any;
 
   static const _cEnumMapping = {
@@ -111,8 +224,12 @@ enum DemandStyle {
   };
 }
 
+/// The direction of a [Image.flip] or [Image.join] operation.
 enum Direction {
+  /// Left to right.
   horizontal,
+
+  /// Top to bottom.
   vertical;
 
   static const _cEnumMapping = {
@@ -121,7 +238,7 @@ enum Direction {
   };
 }
 
-/// A VIPS image.
+/// Representation of an image in VIPS.
 ///
 /// Creating an image is fast. VIPS reads just enough of the image to be able to
 /// get the various properties, such as width in pixels. It delays reading any
@@ -203,6 +320,10 @@ class Image {
         op.setBool($uchar, uchar);
       }
     });
+  }
+
+  factory Image.black() {
+    throw UnimplementedError('TODO');
   }
 
   Image._(Pointer<VipsImage> pointer) : _image = GlibObject(pointer);
@@ -290,6 +411,14 @@ class Image {
     });
   }
 
+  Image join() {
+    throw UnimplementedError('TODO');
+  }
+
+  Image conv() {
+    throw UnimplementedError('TODO');
+  }
+
   // TODO: temperature parameter
   Image labToXyz() {
     return _transformOperation($Lab2XYZ, (op) {});
@@ -318,6 +447,7 @@ class Image {
   ///   that [toColourSpace] can process.
   /// - [guessInterpretation] to guess a sane value for [interpretation] if the
   ///   set value looks crazy.
+  // TODO: Reference more colour space conversion functions.
   Image toColourSpace(Interpretation space, {Interpretation? source}) {
     return _transformOperation($colourspace, (op) {
       op.setDartEnum($space, Interpretation._cEnumMapping, space);
