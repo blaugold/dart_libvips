@@ -121,6 +121,49 @@ enum Direction {
   };
 }
 
+/// A VIPS image.
+///
+/// Creating an image is fast. VIPS reads just enough of the image to be able to
+/// get the various properties, such as width in pixels. It delays reading any
+/// pixels until they are really needed.
+///
+/// VIPS images are three-dimensional arrays, the dimensions being [width],
+/// [height] and [bands]. Each dimension can be up to 2 ** 31 pixels (or band
+/// elements). An image has a [format], meaning the machine number type used to
+/// represent each
+/// value. VIPS supports 10 formats, from 8-bit unsigned integer up to 128-bit
+/// double complex, see [BandFormat].
+///
+/// In VIPS, images are uninterpreted arrays, meaning that from the point of
+/// view of most operations, they are just large collections of numbers. There's
+/// no difference between an RGBA (RGB with alpha) image and a CMYK image, for
+/// example, they are both just four-band images. It's up to the user of the
+/// library to use the right sort of image with each operation.
+///
+/// To take an example, VIPS has [labToXyz], an operation to transform an
+/// image from CIE LAB colour space to CIE XYZ space. It assumes the first three
+/// bands represent pixels in LAB colour space and returns an image where the
+/// first three bands are transformed to XYZ and any remaining bands are just
+/// copied. Pass it a RGB image by mistake and you'll just get nonsense.
+///
+/// VIPS has a feature to help (a little) with this: it sets an [Interpretation]
+/// hint for each image; a hint which says how pixels should be interpreted. For
+/// example, [labToXyz] will set the [interpretation] of the output image to
+/// [Interpretation.xyz]. A few utility operations will also use
+/// [interpretation] as a guide. For example, you can give [toColourSpace] an
+/// input image and a desired colour space and it will use the input's
+/// interpretation hint to apply the best sequence of colour space transforms to
+/// get to the desired space.
+///
+/// Use things like [invert] to manipulate your images. When you are done, you
+/// can write images to disc files (with vips_image_write_to_file() TODO), to
+/// formatted memory buffers (with vips_image_write_to_buffer() TODO) and to
+/// C-style memory arrays (with vips_image_write_to_memory() TODO).
+///
+/// You can also write images to other images. Create, for example, a temporary
+/// disc image with vips_image_new_temp_file() TODO, then write your image to
+/// that with vips_image_write() TODO. You can create several other types of
+/// image and write to them, see vips_image_new_memory() TODO, for example.
 class Image {
   factory Image() => Image._(vips_image_new());
 
@@ -205,6 +248,10 @@ class Image {
     return fields;
   }
 
+  Image invert() {
+    throw UnimplementedError('TODO');
+  }
+
   Image extractArea({
     int top = 0,
     int left = 0,
@@ -242,6 +289,51 @@ class Image {
       op.setDartEnum($direction, Direction._cEnumMapping, direction);
     });
   }
+
+  // TODO: temperature parameter
+  Image labToXyz() {
+    return _transformOperation($Lab2XYZ, (op) {});
+  }
+
+  Image yxyToXyz() {
+    throw UnimplementedError('TODO');
+  }
+
+  Image xyzToLab() {
+    throw UnimplementedError('TODO');
+  }
+
+  /// Looks at [interpretation] of this image and runs a set of colour space
+  /// conversion functions to move it to [space].
+  ///
+  /// If [source] is set it is sued instead of this image's [interpretation].
+  ///
+  /// For example, given an image tagged as [Interpretation.xyz], calling
+  /// this method with [space] set to [Interpretation.lab] will convert with
+  /// [yxyToXyz] and [xyzToLab].
+  ///
+  /// See also:
+  ///
+  /// - [checkColourSpaceIsSupported] to check if this image is in a colour space
+  ///   that [toColourSpace] can process.
+  /// - [guessInterpretation] to guess a sane value for [interpretation] if the
+  ///   set value looks crazy.
+  Image toColourSpace(Interpretation space, {Interpretation? source}) {
+    return _transformOperation($colourspace, (op) {
+      op.setDartEnum($space, Interpretation._cEnumMapping, space);
+      if (source != null) {
+        op.setDartEnum($source_space, Interpretation._cEnumMapping, source);
+      }
+    });
+  }
+
+  /// Tests if this image is in a colour space that [toColourSpace] can process.
+  bool checkColourSpaceIsSupported() =>
+      vips_colourspace_issupported(_image.pointer) == 1;
+
+  /// Guesses a sane value for [interpretation] if the set value looks crazy.
+  Interpretation guessInterpretation() => Interpretation
+      ._cEnumMapping[vips_image_guess_interpretation(_image.pointer)]!;
 
   void saveToWebPFile(String fileName) {
     _effectOperation($webpsave, (op) {

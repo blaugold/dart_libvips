@@ -35,36 +35,38 @@ ffigen:
       - vendor/libvips/build/install/include/vips/vips.h
   functions:
     include:
-      - g_strfreev
-      - g_value_init
-      - g_value_unset
-      - g_value_get_boolean
-      - g_value_set_boolean
-      - g_value_get_int
-      - g_value_get_uint64
-      - g_value_set_uint64
-      - g_value_set_int
-      - g_value_get_double
-      - g_value_set_double
-      - g_value_get_enum
-      - g_value_set_enum
-      - g_value_get_string
-      - g_value_set_string
-      - g_value_get_object
-      - g_value_set_object
-      - g_object_ref
-      - g_object_unref
       - g_object_get_property
+      - g_object_ref
       - g_object_set_property
-      - vips_init
+      - g_object_unref
+      - g_strfreev
+      - g_value_get_boolean
+      - g_value_get_double
+      - g_value_get_enum
+      - g_value_get_int
+      - g_value_get_object
+      - g_value_get_string
+      - g_value_get_uint64
+      - g_value_init
+      - g_value_set_boolean
+      - g_value_set_double
+      - g_value_set_enum
+      - g_value_set_int
+      - g_value_set_object
+      - g_value_set_string
+      - g_value_set_uint64
+      - g_value_unset
+      - vips_.*_get_type
+      - vips_cache_operation_build
+      - vips_colourspace_issupported
       - vips_error_buffer_copy
-      - 'vips_.*_get_type'
-      - vips_object_unref_outputs
+      - vips_image_get_fields
+      - vips_image_guess_interpretation
       - vips_image_new
       - vips_image_new_from_file
-      - vips_image_get_fields
+      - vips_init
+      - vips_object_unref_outputs
       - vips_operation_new
-      - vips_cache_operation_build
   typedefs:
     include:
       - GValue
@@ -75,5 +77,5 @@ ffigen:
       - VipsDirection
   macros:
     include:
-      - 'G_TYPE_.*'
+      - G_TYPE_.*
   ffi-native:

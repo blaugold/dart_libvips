@@ -221,6 +221,12 @@ external int vips_interpolate_get_type();
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_thread_state_get_type')
 external int vips_thread_state_get_type();
 
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<VipsImage>)>(
+    symbol: 'vips_image_guess_interpretation')
+external int vips_image_guess_interpretation(
+  ffi.Pointer<VipsImage> image,
+);
+
 @ffi.Native<
     ffi.Pointer<ffi.Pointer<ffi.Char>> Function(
         ffi.Pointer<VipsImage>)>(symbol: 'vips_image_get_fields')
@@ -427,6 +433,12 @@ external int vips_size_get_type();
 
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_token_get_type')
 external int vips_token_get_type();
+
+@ffi.Native<ffi.Int Function(ffi.Pointer<VipsImage>)>(
+    symbol: 'vips_colourspace_issupported')
+external int vips_colourspace_issupported(
+  ffi.Pointer<VipsImage> image,
+);
 
 @ffi.Native<ffi.Int Function(ffi.Pointer<ffi.Char>)>(symbol: 'vips_init')
 external int vips_init(

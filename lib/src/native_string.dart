@@ -19,6 +19,7 @@ class NativeString implements Finalizable {
 
 final $bands = NativeString('bands');
 final $coding = NativeString('coding');
+final $colourspace = NativeString('colourspace');
 final $demand = NativeString('demand');
 final $direction = NativeString('direction');
 final $extract_area = NativeString('extract_area');
@@ -31,6 +32,7 @@ final $height = NativeString('height');
 final $in = NativeString('in');
 final $input = NativeString('input');
 final $interpretation = NativeString('interpretation');
+final $Lab2XYZ = NativeString('Lab2XYZ');
 final $left = NativeString('left');
 final $n = NativeString('n');
 final $out = NativeString('out');
@@ -46,3 +48,5 @@ final $xoffset = NativeString('xoffset');
 final $xres = NativeString('xres');
 final $yoffset = NativeString('yoffset');
 final $yres = NativeString('yres');
+final $space = NativeString('space');
+final $source_space = NativeString('source_space');
