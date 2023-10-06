@@ -7,7 +7,7 @@ void main(List<String> args) async {
   final buildOutput = BuildOutput();
 
   final builder = MesonBuilder.library(
-    assetId: 'package:dart_libvips/src/bindings.dart',
+    assetId: 'package:vips/src/bindings.dart',
     target: 'libvips/vips',
     project: 'vendor/libvips',
     options: {

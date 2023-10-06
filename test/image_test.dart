@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_libvips/dart_libvips.dart';
-import 'package:dart_libvips/src/image.dart';
 import 'package:test/test.dart';
+import 'package:vips/vips.dart';
 
 void main() {
   setUp(initVips);

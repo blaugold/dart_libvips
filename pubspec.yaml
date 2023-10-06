@@ -1,6 +1,5 @@
-# TODO: Rename to libvips once https://github.com/dart-lang/native/issues/142 is fixed.
-name: dart_libvips
-description: A starting point for Dart libraries or applications.
+name: vips
+description: Dart API for the VIPS image processing library.
 version: 0.1.0
 publish_to: none
 
