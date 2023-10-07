@@ -40,6 +40,7 @@ ffigen:
       - g_object_unref
       - g_strfreev
       - g_value_get_boolean
+      - g_value_get_boxed
       - g_value_get_double
       - g_value_get_enum
       - g_value_get_int
@@ -48,6 +49,7 @@ ffigen:
       - g_value_get_uint64
       - g_value_init
       - g_value_set_boolean
+      - g_value_set_boxed
       - g_value_set_double
       - g_value_set_enum
       - g_value_set_int
@@ -56,6 +58,8 @@ ffigen:
       - g_value_set_uint64
       - g_value_unset
       - vips_.*_get_type
+      - vips_area_copy
+      - vips_blob_new
       - vips_cache_operation_build
       - vips_colourspace_issupported
       - vips_error_buffer_copy
@@ -69,6 +73,7 @@ ffigen:
   typedefs:
     include:
       - GValue
+      - VipsBlob
       - VipsImage
       - VipsOperation
   enums:
@@ -77,4 +82,5 @@ ffigen:
   macros:
     include:
       - G_TYPE_.*
+      - G_CONNECT_.*
   ffi-native:

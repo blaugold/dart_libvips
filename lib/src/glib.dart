@@ -58,10 +58,27 @@ class GlibValue implements Finalizable {
     });
   }
 
-  Pointer<Void>? get object => g_value_get_object(_pointer);
+  Pointer<Void>? get object {
+    final result = g_value_get_object(_pointer);
+    if (result == nullptr) {
+      return null;
+    }
+    return result;
+  }
 
   set object(Pointer<Void>? value) =>
       g_value_set_object(_pointer, value ?? nullptr);
+
+  Pointer<Void>? get boxed {
+    final result = g_value_get_boxed(_pointer);
+    if (result == nullptr) {
+      return null;
+    }
+    return result;
+  }
+
+  set boxed(Pointer<Void>? value) =>
+      g_value_set_boxed(_pointer, value ?? nullptr);
 }
 
 class GlibObject<T extends NativeType> implements Finalizable {
@@ -139,6 +156,12 @@ class GlibObject<T extends NativeType> implements Finalizable {
 
   void setObject(NativeString name, int type, Pointer<Void>? value) =>
       _setProperty(name, type, () => _currentValue.object = value);
+
+  Pointer<Void>? getBoxed(NativeString name, int type) =>
+      _getProperty(name, type, () => _currentValue.boxed);
+
+  void setBoxed(NativeString name, int type, Pointer<Void>? value) =>
+      _setProperty(name, type, () => _currentValue.boxed = value);
 
   @pragma('vm:prefer-inline')
   R _getProperty<R>(NativeString name, int type, R Function() read) {

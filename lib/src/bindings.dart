@@ -25,6 +25,19 @@ external void g_value_unset(
   ffi.Pointer<GValue> value,
 );
 
+@ffi.Native<ffi.Void Function(ffi.Pointer<GValue>, ffi.Pointer<ffi.Void>)>(
+    symbol: 'g_value_set_boxed')
+external void g_value_set_boxed(
+  ffi.Pointer<GValue> value,
+  ffi.Pointer<ffi.Void> v_boxed,
+);
+
+@ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<GValue>)>(
+    symbol: 'g_value_get_boxed')
+external ffi.Pointer<ffi.Void> g_value_get_boxed(
+  ffi.Pointer<GValue> value,
+);
+
 @ffi.Native<
     ffi.Void Function(ffi.Pointer<_GObject>, ffi.Pointer<ffi.Char>,
         ffi.Pointer<GValue>)>(symbol: 'g_object_set_property')
@@ -155,6 +168,12 @@ external void vips_object_unref_outputs(
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_thing_get_type')
 external int vips_thing_get_type();
 
+@ffi.Native<ffi.Pointer<_VipsArea> Function(ffi.Pointer<_VipsArea>)>(
+    symbol: 'vips_area_copy')
+external ffi.Pointer<_VipsArea> vips_area_copy(
+  ffi.Pointer<_VipsArea> area,
+);
+
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_area_get_type')
 external int vips_area_get_type();
 
@@ -163,6 +182,23 @@ external int vips_save_string_get_type();
 
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_ref_string_get_type')
 external int vips_ref_string_get_type();
+
+@ffi.Native<
+    ffi.Pointer<VipsBlob> Function(
+        ffi.Pointer<
+            ffi.NativeFunction<
+                ffi.Int Function(
+                    ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Size)>(symbol: 'vips_blob_new')
+external ffi.Pointer<VipsBlob> vips_blob_new(
+  ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>
+      free_fn,
+  ffi.Pointer<ffi.Void> data,
+  int length,
+);
 
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_blob_get_type')
 external int vips_blob_get_type();
@@ -565,6 +601,47 @@ final class _VipsObject extends ffi.Struct {
 
 final class _GHashTable extends ffi.Opaque {}
 
+final class _VipsArea extends ffi.Struct {
+  external ffi.Pointer<ffi.Void> data;
+
+  @ffi.Size()
+  external int length;
+
+  @ffi.Int()
+  external int n;
+
+  @ffi.Int()
+  external int count;
+
+  external ffi.Pointer<_GMutex> lock;
+
+  external ffi.Pointer<
+          ffi.NativeFunction<
+              ffi.Int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>
+      free_fn;
+
+  external ffi.Pointer<ffi.Void> client;
+
+  @ffi.UnsignedLong()
+  external int type;
+
+  @ffi.Size()
+  external int sizeof_type;
+}
+
+final class _GMutex extends ffi.Union {
+  external ffi.Pointer<ffi.Void> p;
+
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.UnsignedInt> i;
+}
+
+typedef VipsBlob = _VipsBlob;
+
+final class _VipsBlob extends ffi.Struct {
+  external _VipsArea area;
+}
+
 typedef VipsImage = _VipsImage;
 
 final class _VipsImage extends ffi.Struct {
@@ -925,13 +1002,6 @@ final class VipsBufferThread extends ffi.Struct {
   external ffi.Pointer<_GHashTable> hash;
 
   external ffi.Pointer<_GThread> thread;
-}
-
-final class _GMutex extends ffi.Union {
-  external ffi.Pointer<ffi.Void> p;
-
-  @ffi.Array.multi([2])
-  external ffi.Array<ffi.UnsignedInt> i;
 }
 
 abstract class VipsDemandStyle {

@@ -2,11 +2,15 @@ import 'package:logging/logging.dart';
 import 'package:native_assets_cli/native_assets_cli.dart';
 import 'package:native_toolchain_c/native_toolchain_c.dart';
 
+final logger = Logger('')
+  ..level = Level.ALL
+  ..onRecord.listen((record) => print(record.message));
+
 void main(List<String> args) async {
   final buildConfig = await BuildConfig.fromArgs(args);
   final buildOutput = BuildOutput();
 
-  final builder = MesonBuilder.library(
+  final vipsBuilder = MesonBuilder.library(
     assetId: 'package:vips/src/bindings.dart',
     target: 'libvips/vips',
     project: 'vendor/libvips',
@@ -27,12 +31,24 @@ void main(List<String> args) async {
     ],
   );
 
-  await builder.run(
+  await vipsBuilder.run(
     buildConfig: buildConfig,
     buildOutput: buildOutput,
-    logger: Logger('')
-      ..level = Level.ALL
-      ..onRecord.listen((record) => print(record.message)),
+    logger: logger,
+  );
+
+  final supportBuilder = CBuilder.library(
+    name: 'noop',
+    assetId: 'package:vips/src/support_bindings.dart',
+    sources: [
+      'src/support.c',
+    ],
+  );
+
+  await supportBuilder.run(
+    buildConfig: buildConfig,
+    buildOutput: buildOutput,
+    logger: logger,
   );
 
   await buildOutput.writeToFile(outDir: buildConfig.outDir);

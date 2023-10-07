@@ -1,8 +1,10 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
+import 'blob.dart';
 import 'glib.dart';
 import 'native_string.dart';
 import 'operation.dart';
@@ -304,6 +306,26 @@ class Image {
     });
   }
 
+  factory Image.fromWebPData(
+    Uint8List data, {
+    int? page,
+    int? n,
+    double? scale,
+  }) {
+    return _constructOperation($webploadBuffer, (op) {
+      op.setBlob($buffer, Blob.from(data));
+      if (page != null) {
+        op.setInt($page, page);
+      }
+      if (n != null) {
+        op.setInt($n, n);
+      }
+      if (scale != null) {
+        op.setDouble($scale, scale);
+      }
+    });
+  }
+
   factory Image.eye({
     required int width,
     required int height,
@@ -381,7 +403,7 @@ class Image {
   }) {
     // This operation is the only one that doesn't use the $in argument, so we
     // cannot use the _transformOperation helper.
-    return _constructOperation($extract_area, (op) {
+    return _constructOperation($extractArea, (op) {
       op
         ..setImage($input, this)
         ..setInt($top, top)
@@ -421,7 +443,7 @@ class Image {
 
   // TODO: temperature parameter
   Image labToXyz() {
-    return _transformOperation($Lab2XYZ, (op) {});
+    return _transformOperation($lab2xyz, (op) {});
   }
 
   Image yxyToXyz() {
@@ -452,7 +474,7 @@ class Image {
     return _transformOperation($colourspace, (op) {
       op.setDartEnum($space, Interpretation._cEnumMapping, space);
       if (source != null) {
-        op.setDartEnum($source_space, Interpretation._cEnumMapping, source);
+        op.setDartEnum($sourceSpace, Interpretation._cEnumMapping, source);
       }
     });
   }
@@ -465,10 +487,20 @@ class Image {
   Interpretation guessInterpretation() => Interpretation
       ._cEnumMapping[vips_image_guess_interpretation(_image.pointer)]!;
 
+  // TODO: Parameters
   void saveToWebPFile(String fileName) {
-    _effectOperation($webpsave, (op) {
+    _operation($webpsave, (op) {
       op.setString($filename, fileName);
     });
+  }
+
+  // TODO: Parameters
+  Uint8List toWebPData() {
+    return _operation(
+      $webpsaveBuffer,
+      (op) {},
+      (result) => Uint8List.fromList(result.getBlob($buffer)!.view),
+    );
   }
 
   static Image _constructOperation(
@@ -490,14 +522,15 @@ class Image {
     });
   }
 
-  void _effectOperation(
+  T _operation<T>(
     NativeString name,
-    void Function(GlibObject op) setArguments,
-  ) {
+    void Function(GlibObject op) setArguments, [
+    T Function(GlibObject result)? getResult,
+  ]) {
     final op = Operation(name);
     op.setImage($in, this);
     setArguments(op);
-    return op.build();
+    return op.build(getResult);
   }
 }
 
