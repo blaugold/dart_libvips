@@ -4,7 +4,6 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings.dart';
 import 'native_string.dart';
-import 'native_workarounds.dart';
 
 class GlibValue implements Finalizable {
   factory GlibValue() => GlibValue._(calloc<GValue>());
@@ -88,7 +87,7 @@ class GlibObject<T extends NativeType> implements Finalizable {
     }
   }
 
-  static final _finalizer = NativeFinalizer(g_object_unref_pointer);
+  static final _finalizer = NativeFinalizer(Native.addressOf(g_object_unref));
   static final _currentValue = GlibValue();
 
   final Pointer<T> pointer;

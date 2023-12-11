@@ -168,10 +168,15 @@ external void vips_object_unref_outputs(
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_thing_get_type')
 external int vips_thing_get_type();
 
-@ffi.Native<ffi.Pointer<_VipsArea> Function(ffi.Pointer<_VipsArea>)>(
+@ffi.Native<ffi.Pointer<VipsArea> Function(ffi.Pointer<VipsArea>)>(
     symbol: 'vips_area_copy')
-external ffi.Pointer<_VipsArea> vips_area_copy(
-  ffi.Pointer<_VipsArea> area,
+external ffi.Pointer<VipsArea> vips_area_copy(
+  ffi.Pointer<VipsArea> area,
+);
+
+@ffi.Native<ffi.Void Function(ffi.Pointer<VipsArea>)>(symbol: 'vips_area_unref')
+external void vips_area_unref(
+  ffi.Pointer<VipsArea> area,
 );
 
 @ffi.Native<ffi.UnsignedLong Function()>(symbol: 'vips_area_get_type')
@@ -601,6 +606,8 @@ final class _VipsObject extends ffi.Struct {
 
 final class _GHashTable extends ffi.Opaque {}
 
+typedef VipsArea = _VipsArea;
+
 final class _VipsArea extends ffi.Struct {
   external ffi.Pointer<ffi.Void> data;
 
@@ -639,7 +646,7 @@ final class _GMutex extends ffi.Union {
 typedef VipsBlob = _VipsBlob;
 
 final class _VipsBlob extends ffi.Struct {
-  external _VipsArea area;
+  external VipsArea area;
 }
 
 typedef VipsImage = _VipsImage;

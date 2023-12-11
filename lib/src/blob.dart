@@ -4,8 +4,9 @@ import 'dart:typed_data';
 import 'bindings.dart';
 import 'glib.dart';
 import 'native_string.dart';
-import 'native_workarounds.dart' as workarounds;
 import 'support_bindings.dart';
+
+typedef _VipsAreaUnref = NativeFunction<Void Function(Pointer<VipsArea>)>;
 
 class Blob implements Finalizable {
   Blob._(this.pointer) {
@@ -16,15 +17,18 @@ class Blob implements Finalizable {
     );
   }
 
-  factory Blob(int size) => Blob._(vips_blob_new(
-        vips_support_free_callback_ptr(),
-        vips_support_malloc(size),
-        size,
-      ));
+  factory Blob(int size) {
+    return Blob._(vips_blob_new(
+      vips_support_free_callback_ptr(),
+      vips_support_malloc(size),
+      size,
+    ));
+  }
 
   factory Blob.from(Uint8List data) => Blob(data.length)..view.setAll(0, data);
 
-  static final _finalizer = NativeFinalizer(workarounds.vips_area_unref);
+  static final _finalizer =
+      NativeFinalizer(Native.addressOf<_VipsAreaUnref>(vips_area_unref).cast());
 
   final Pointer<VipsBlob> pointer;
 
