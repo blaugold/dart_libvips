@@ -25,17 +25,30 @@ class Blob implements Finalizable {
     ));
   }
 
-  factory Blob.from(Uint8List data) => Blob(data.length)..view.setAll(0, data);
+  factory Blob.from(Uint8List data) =>
+      Blob(data.length)..asTypedList().setAll(0, data);
 
-  static final _finalizer =
-      NativeFinalizer(Native.addressOf<_VipsAreaUnref>(vips_area_unref).cast());
+  // ignore: non_constant_identifier_names
+  static final _vips_are_unref_pointer =
+      Native.addressOf<_VipsAreaUnref>(vips_area_unref);
+  static final _finalizer = NativeFinalizer(_vips_are_unref_pointer.cast());
 
   final Pointer<VipsBlob> pointer;
 
-  Uint8List get view {
+  Uint8List asTypedList() {
     final area = pointer.ref.area;
     final data = area.data.cast<Uint8>();
-    return data.asTypedList(area.length);
+
+    // Increment the ref count of the area.
+    vips_area_copy(pointer.cast());
+
+    return data.asTypedList(
+      area.length,
+      // Attach a finalizer to the returned Dart list. When the list is garbage
+      // collected, the finalizer will decrement the ref count of the area.
+      finalizer: _vips_are_unref_pointer.cast(),
+      token: pointer.cast(),
+    );
   }
 }
 

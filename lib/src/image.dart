@@ -499,7 +499,7 @@ class Image {
     return _operation(
       $webpsaveBuffer,
       (op) {},
-      (result) => Uint8List.fromList(result.getBlob($buffer)!.view),
+      (result) => result.getBlob($buffer)!.asTypedList(),
     );
   }
 
