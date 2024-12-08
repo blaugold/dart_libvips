@@ -8,7 +8,8 @@ environment:
 
 dependencies:
   logging: ^1.2.0
-  native_assets_cli: ^0.3.0
+  native_assets_cli:
+    path: ../dart/native/pkgs/native_assets_cli
   native_toolchain_c:
     path: ../dart/native/pkgs/native_toolchain_c
   ffi: ^2.1.0
