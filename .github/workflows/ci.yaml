@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * 0" # weekly
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        sdk: [dev]
+
+
+    runs-on: ${{ matrix.os }}-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+
+      - run: |
+          pip3 install --break-system-packages meson==1.0.0
+          pip3 install --break-system-packages setuptools
+        if: ${{ matrix.os == 'macos' }}
+
+      - run: pip3 install meson==1.0.0
+        if: ${{ matrix.os != 'macos' }}
+
+      - uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - run: dart pub get
+
+      - run: dart analyze --fatal-infos
+
+      - run: dart format --output=none --set-exit-if-changed .
+
+      - name: Install native toolchains
+        run: sudo apt-get update && sudo apt-get install clang-15
+        if: ${{ matrix.os == 'ubuntu' }}
+
+      - run: dart --enable-experiment=native-assets test
