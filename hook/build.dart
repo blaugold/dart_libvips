@@ -1,6 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:native_assets_cli/native_assets_cli.dart';
 import 'package:native_toolchain_c/native_toolchain_c.dart';
+import 'package:native_toolchain_meson/native_toolchain_meson.dart';
 
 final logger = Logger('')
   ..level = Level.ALL
